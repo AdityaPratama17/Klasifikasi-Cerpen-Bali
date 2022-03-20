@@ -9,6 +9,24 @@
 <body>
     <form action="{% url 'ceritabali:pengujian' %}" method="post">
         {% csrf_token %}
+        <label for="seleksi" class="form-label">Seleksi Fitur</label>
+        <select class="form-select" id="seleksi" name="seleksi">
+            <option value="yes" {% if old.seleksi == 'yes' %} selected {% endif %}>seleksi fitur</option>
+            <option value="no" {% if old.seleksi == 'no' %} selected {% endif %}>tanpa seleksi fitur</option>
+        </select>
+        <br>
+        <label for="iterasi" class="form-label">Jumlah Iterasi</label>
+        <input type="text" id="iterasi" class="form-control" name="iterasi" {% if old.iterasi %} value="{{ old.iterasi }}"{% endif %} required>
+        <br>
+        <label for="kromosom" class="form-label">Jumlah Kromosom</label>
+        <input type="text" id="kromosom" class="form-control" name="kromosom" {% if old.kromosom %} value="{{ old.kromosom }}"{% endif %} required>
+        <br>
+        <label for="cr" class="form-label">Crossover Rate</label>
+        <input type="text" id="cr" class="form-control" name="cr" {% if old.cr %} value="{{ old.cr }}"{% endif %} required>
+        <br>
+        <label for="mr" class="form-label">Mutation Rate</label>
+        <input type="text" id="mr" class="form-control" name="mr" {% if old.mr %} value="{{ old.mr }}"{% endif %} required>
+        <br>
         <button type="submit">run</button>
     </form>
 </body>

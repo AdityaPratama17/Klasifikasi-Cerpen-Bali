@@ -50,8 +50,6 @@ def test(doc_test,terms,jum_term_kelas,prob_term):
                 hasil_test['remaja'] *= prob_term[term]['remaja']
                 hasil_test['dewasa'] *= prob_term[term]['dewasa']
             
-
-
             # lakukan normalisasi ketika decimal > e-324 (karena ketika decimal > e-324, decimal akan diubah menjadi 0.0) -- https://realpython.com/python-data-types/ --
             if hasil_test['anak'] == 0 or hasil_test['remaja'] == 0 or hasil_test['dewasa'] == 0:
                 if max(old_hasil_test.values()) - min(old_hasil_test.values()) == 0:
@@ -68,62 +66,4 @@ def test(doc_test,terms,jum_term_kelas,prob_term):
         # penentuan hasil naive bayes
         result[doc_test[doc]['id']] = {'kelas':max(hasil_test, key=hasil_test.get),'prob':max(hasil_test.values())}
 
-        # print('hasil :',hasil_test)
-        # print('result:',result[doc_test[doc]['id']])
-        # print('kelas actual:',doc_test[doc]['kelas'],'\n')
-    
     return result
-
-def naive_bayes_bc(doc_train,doc_test,terms,seleksi):
-    # -- Training
-    jum_term_kelas = {'anak':0,'remaja':0,'dewasa':0}
-    prob_term = {}
-    for term in terms:
-        if term in seleksi :
-            prob_term[term] = {'anak':0,'remaja':0,'dewasa':0}
-            for doc in doc_train:
-                if doc_train[doc]['id'] in terms[term]:
-                    if doc_train[doc]['kelas'] == 'anak':
-                        jum_term_kelas['anak'] += terms[term][doc_train[doc]['id']]
-                        prob_term[term]['anak'] += terms[term][doc_train[doc]['id']]
-                    elif doc_train[doc]['kelas'] == 'remaja':
-                        jum_term_kelas['remaja'] += terms[term][doc_train[doc]['id']]
-                        prob_term[term]['remaja'] += terms[term][doc_train[doc]['id']]
-                    elif doc_train[doc]['kelas'] == 'dewasa':
-                        jum_term_kelas['dewasa'] += terms[term][doc_train[doc]['id']]
-                        prob_term[term]['dewasa'] += terms[term][doc_train[doc]['id']]
-    
-    # print(jum_term_kelas)
-    # print(prob_term['janganlah'])
-
-    for term in prob_term:
-        prob_term[term]['anak'] = (prob_term[term]['anak']+1)/(jum_term_kelas['anak']+len(seleksi))
-        prob_term[term]['remaja'] = (prob_term[term]['remaja']+1)/(jum_term_kelas['remaja']+len(seleksi))
-        prob_term[term]['dewasa'] = (prob_term[term]['dewasa']+1)/(jum_term_kelas['dewasa']+len(seleksi))
-    
-    # print(prob_term['janganlah'])
-
-    # -- Testing
-    result = {}
-    for doc in doc_test:
-        # hitung probabilitas kelas
-        hasil_test = {'anak':1,'remaja':1,'dewasa':1}
-        for term in doc_test[doc]['term']:
-            if term not in prob_term:
-                hasil_test['anak'] *= 1/(jum_term_kelas['anak']+len(seleksi))
-                hasil_test['remaja'] *= 1/(jum_term_kelas['remaja']+len(seleksi))
-                hasil_test['dewasa'] *= 1/(jum_term_kelas['dewasa']+len(seleksi))
-            else:
-                hasil_test['anak'] *= prob_term[term]['anak']
-                hasil_test['remaja'] *= prob_term[term]['remaja']
-                hasil_test['dewasa'] *= prob_term[term]['dewasa']
-        hasil_test['anak'] *= 1/3
-        hasil_test['remaja'] *= 1/3
-        hasil_test['dewasa'] *= 1/3
-
-        # penentuan hasil naive bayes
-        result[doc_test[doc]['id']] = {'kelas':max(hasil_test, key=hasil_test.get),'prob':max(hasil_test.values())}
-        # print(hasil_test)
-        # print(result)
-    
-    return result 

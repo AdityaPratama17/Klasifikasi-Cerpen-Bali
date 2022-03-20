@@ -9,41 +9,6 @@ from .scripts.genetic_algorithm import genetic_algorithm, evaluasi as eval_kfcv
 
 def index(request):
     return redirect('ceritabali:dokumen')
-    # == PREPROCESSING ==
-    # docs,terms = preprocessing()
-    docs,terms = get_data()
-
-    # == GENETIC ALGORITHM ==
-    generasi = 20
-    jum_kromosom = 5
-    jum_gen = len(terms)
-    pc = 0.25
-    pm = 0.01
-    seleksi = genetic_algorithm(docs,terms,generasi,jum_kromosom,jum_gen,pc,pm)  
-
-    # == NAIVE BAYES ==
-    # -- Split Data
-    doc_train = {}
-    doc_test = {}
-    rand = random.sample(range(1,len(docs)+1), len(docs))
-    for i,value in enumerate(rand):
-        if i <= len(docs)*0.7:
-            doc_train[value]=docs[value]
-        else:
-            doc_test[value]=docs[value]
-    result = naive_bayes(doc_train,doc_test,terms,seleksi)
-
-    # == EVALUASI ==
-    evaluasi = confusion_matrix(doc_test,result)
-    print('akurasi :',evaluasi[0])
-    print('precision :',evaluasi[1])
-    print('recall :',evaluasi[2])
-    print('f_measure :',evaluasi[3])
-
-    context ={
-        'title' : 'Dataset',
-    }
-    return render(request, 'ceritabali/index.html', context)
 
 def dokumen(request):
     doc_db = Document.objects.filter().values()
@@ -97,7 +62,7 @@ def pengujian(request):
             pm = float(request.POST['mr'])
             seleksi,kromosom = genetic_algorithm(doc_train,terms,generasi,jum_kromosom,jum_gen,pc,pm)
             print('jum terms:',len(terms),', jum seleksi:',len(seleksi))
-            print('hasil seleksi fitur (data train)')
+            print('\nhasil seleksi fitur (data train)')
             for i in kromosom['avg'].items(): print(i)
 
             # KLASIFIKASI (NAIVE BAYES)
@@ -120,13 +85,15 @@ def pengujian(request):
                 'avg' : kromosom['avg'],
                 'evaluasi' : evaluasi
             }
-            return render(request, 'ceritabali/pengujian.html', context)
+            return render(request, 'ceritabali/pengujian_cmd.html', context)
 
         else:
             # EVALUASI NB DENGAN KFCV TANPA GA 
             seleksi = [1 for i in range(len(terms))]
             term_only = [i for i in terms]
             fold,avg,fitness = eval_kfcv(doc_train,terms,term_only,seleksi)
+            print('\nhasil tanpa seleksi fitur + NB (data train)')
+            for i in avg.items(): print(i)
 
             # -- TRAIN & TEST NAIVE BAYES
             seleksi = [i for i in terms]
@@ -137,7 +104,7 @@ def pengujian(request):
                         terms_train[term] = terms[term]
             result = naive_bayes(doc_train,doc_test,terms_train,seleksi)
             evaluasi = confusion_matrix(doc_test,result)
-            print('hasil tanpa seleksi fitur + NB (data test)')
+            print('\nhasil tanpa seleksi fitur + NB (data test)')
             for i in evaluasi.items(): print(i)
 
             context ={
@@ -147,12 +114,12 @@ def pengujian(request):
                 'avg' : avg,
                 'evaluasi' : evaluasi
             }
-            return render(request, 'ceritabali/pengujian.html', context)
+            return render(request, 'ceritabali/pengujian_cmd.html', context)
 
     context ={
         'title' : 'Pengujian',
     }
-    return render(request, 'ceritabali/pengujian.html', context)
+    return render(request, 'ceritabali/pengujian_cmd.html', context)
 
 
 from .BahasBali.Stemmer.StemmerFactory import StemmerFactory
