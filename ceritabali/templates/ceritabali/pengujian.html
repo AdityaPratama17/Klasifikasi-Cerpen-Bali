@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="">Home</a></li>
+                    <li class="breadcrumb-item active">Pengujian Sistem</li>
+                </ol>
+            </div>
+            <h4 class="page-title">Pengujian Sistem</h4>
+        </div>
+    </div>
+</div>  
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form action="{% url 'ceritabali:pengujian' %}" method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="mb-3 col-4">
+                            <label for="seleksi" class="form-label">Seleksi Fitur</label>
+                            <select class="form-select" id="seleksi" name="seleksi">
+                                <option value="yes" {% if old.seleksi == 'yes' %} selected {% endif %}>Ya</option>
+                                <option value="no" {% if old.seleksi == 'no' %} selected {% endif %}>Tidak</option>
+                            </select>
+                        </div>                
+                        <div class="mb-3 col-4">
+                            <label for="iterasi" class="form-label">Jumlah Iterasi</label>
+                            <input type="text" id="iterasi" class="form-control" name="iterasi"
+                            {% if old.iterasi %} value="{{ old.iterasi }}"{% endif %} required>
+                        </div>                
+                        <div class="mb-3 col-4">
+                            <label for="kromosom" class="form-label">Jumlah Kromosom</label>
+                            <input type="text" id="kromosom" class="form-control" name="kromosom"
+                            {% if old.kromosom %} value="{{ old.kromosom }}"{% endif %} required>
+                        </div>                
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-6">
+                            <label for="cr" class="form-label">Crossover Rate</label>
+                            <input type="text" id="cr" class="form-control" name="cr"
+                            {% if old.cr %} value="{{ old.cr }}"{% endif %} required>
+                        </div>                
+                        <div class="mb-3 col-6">
+                            <label for="mr" class="form-label">Mutation Rate</label>
+                            <input type="text" id="mr" class="form-control" name="mr"
+                            {% if old.mr %} value="{{ old.mr }}"{% endif %} required>
+                        </div>                
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary"><i class="uil-sync"></i> Process</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if old %} 
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <h4 class="card-header">Hasil Evaluasi dengan Data Training</h4>
+            <div class="card-body">
+                <table class="table mb-0 text-center table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col" colspan="2">Evaluasi</th>
+                            <th scope="col">Fold-1</th>
+                            <th scope="col">Fold-2</th>
+                            <th scope="col">Fold-3</th>
+                            <th scope="col">Rata-rata</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row" colspan="2">Accuracy</th>
+                            {% for key,value in fold.items %}
+                                <td>{{ value.akurasi }}%</td>
+                            {% endfor %}
+                            <td>{{ avg.akurasi }}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" rowspan="3" style="vertical-align : middle;text-align:center;">Precision</th>
+                            <th scope="row">Anak</th>
+                            {% for key,value in fold.items %}
+                                <td>{{ value.precision.anak }}%</td>
+                            {% endfor %}
+                            <td>{{ avg.precision.anak }}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Remaja</th>
+                            {% for key,value in fold.items %}
+                                <td>{{ value.precision.remaja }}%</td>
+                            {% endfor %}
+                            <td>{{ avg.precision.remaja }}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Dewasa</th>
+                            {% for key,value in fold.items %}
+                                <td>{{ value.precision.dewasa }}%</td>
+                            {% endfor %}
+                            <td>{{ avg.precision.dewasa }}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" rowspan="3" style="vertical-align : middle;text-align:center;">Recall</th>
+                            <th scope="row">Anak</th>
+                            {% for key,value in fold.items %}
+                                <td>{{ value.recall.anak }}%</td>
+                            {% endfor %}
+                            <td>{{ avg.recall.anak }}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Remaja</th>
+                            {% for key,value in fold.items %}
+                                <td>{{ value.recall.remaja }}%</td>
+                            {% endfor %}
+                            <td>{{ avg.recall.remaja }}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Dewasa</th>
+                            {% for key,value in fold.items %}
+                                <td>{{ value.recall.dewasa }}%</td>
+                            {% endfor %}
+                            <td>{{ avg.recall.dewasa }}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" rowspan="3" style="vertical-align : middle;text-align:center;">F-Measure</th>
+                            <th scope="row">Anak</th>
+                            {% for key,value in fold.items %}
+                                <td>{{ value.f_measure.anak }}%</td>
+                            {% endfor %}
+                            <td>{{ avg.f_measure.anak }}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Remaja</th>
+                            {% for key,value in fold.items %}
+                                <td>{{ value.f_measure.remaja }}%</td>
+                            {% endfor %}
+                            <td>{{ avg.f_measure.remaja }}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Dewasa</th>
+                            {% for key,value in fold.items %}
+                                <td>{{ value.f_measure.dewasa }}%</td>
+                            {% endfor %}
+                            <td>{{ avg.f_measure.dewasa }}%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-8">
+        <div class="card">
+            <h4 class="card-header">Hasil Evaluasi dengan Data Testing</h4>
+            <div class="card-body">
+                <table class="table mb-0 text-center table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col" colspan="2">Evaluasi</th>
+                            <th scope="col">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row" colspan="2">Accuracy</th>
+                            <td>{{ evaluasi.akurasi }}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" rowspan="3" style="vertical-align : middle;text-align:center;">Precision</th>
+                            <th scope="row">Anak</th>
+                            <td>{{ evaluasi.precision.anak }}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Remaja</th>
+                            <td>{{ evaluasi.precision.remaja }}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Dewasa</th>
+                            <td>{{ evaluasi.precision.dewasa }}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" rowspan="3" style="vertical-align : middle;text-align:center;">Recall</th>
+                            <th scope="row">Anak</th>
+                            <td>{{ evaluasi.recall.anak }}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Remaja</th>
+                            <td>{{ evaluasi.recall.remaja }}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Dewasa</th>
+                            <td>{{ evaluasi.recall.dewasa }}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" rowspan="3" style="vertical-align : middle;text-align:center;">F-Measure</th>
+                            <th scope="row">Anak</th>
+                            <td>{{ evaluasi.f_measure.anak }}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Remaja</th>
+                            <td>{{ evaluasi.f_measure.remaja }}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Dewasa</th>
+                            <td>{{ evaluasi.f_measure.dewasa }}%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock content %}
+    
