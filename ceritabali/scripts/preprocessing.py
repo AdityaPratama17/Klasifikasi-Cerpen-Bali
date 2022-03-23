@@ -163,9 +163,9 @@ def preprocessing_train(stopword,stemmer,terms,id_doc,id_tf):
     all_files = os.listdir("static/Data Cerpen/Data Training")
     all_files = random.sample(all_files, len(all_files))
     kelas_train = {
-        '1' : {'anak':1,'remaja':1,'dewasa':1},
-        '2' : {'anak':1,'remaja':1,'dewasa':1},
-        '3' : {'anak':1,'remaja':1,'dewasa':1},
+        '1' : {'anak':15,'remaja':15,'dewasa':15},
+        '2' : {'anak':15,'remaja':15,'dewasa':15},
+        '3' : {'anak':15,'remaja':15,'dewasa':15},
     }
     for id,name_file in enumerate(all_files):
         # READ DOCUMENTS
@@ -188,28 +188,28 @@ def preprocessing_train(stopword,stemmer,terms,id_doc,id_tf):
         for i in kelas_train:
             if kelas == 'anak':
                 if i == '1':
-                    if kelas_train[i]['anak'] <= 14:
+                    if kelas_train[i]['anak'] > 0:
                         flag = kelas
                 else:
-                    if kelas_train[i]['anak'] <= 13:
+                    if kelas_train[i]['anak'] > 0:
                         flag = kelas
             if kelas == 'remaja':
                 if i == '2':
-                    if kelas_train[i]['remaja'] <= 14:
+                    if kelas_train[i]['remaja'] > 0:
                         flag = kelas
                 else:
-                    if kelas_train[i]['remaja'] <= 13:
+                    if kelas_train[i]['remaja'] > 0:
                         flag = kelas
             if kelas == 'dewasa':
                 if i == '3':
-                    if kelas_train[i]['dewasa'] <= 14:
+                    if kelas_train[i]['dewasa'] > 0:
                         flag = kelas
                 else:
-                    if kelas_train[i]['dewasa'] <= 13:
+                    if kelas_train[i]['dewasa'] > 0:
                         flag = kelas
             if flag != '':
                 fold = int(i)
-                kelas_train[i][flag] += 1
+                kelas_train[i][flag] -= 1
                 break
 
         # INSERT DOC TO DB

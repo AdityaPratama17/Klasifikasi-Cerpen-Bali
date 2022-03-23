@@ -7,5 +7,4 @@ urlpatterns = [
     path('detail/<int:id>', views.detail, name="detail"),
     path('pengujian', views.pengujian, name="pengujian"),
     path('refresh', views.refresh, name="refresh"),
-    path('test', views.test, name="test"),
 ]
