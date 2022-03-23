@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 from .models import Document, Term, TF
-import random
 from .scripts.preprocessing import preprocessing, get_data
 from .scripts.naive_bayes import naive_bayes
 from .scripts.evaluasi import confusion_matrix
@@ -34,12 +33,6 @@ def detail(request, id):
         'kelas' : doc_db[0]['kelas'],
     }
     return render(request, 'ceritabali/detail.html', context)
-
-def refresh(request):
-    if request.method == 'POST':
-        preprocessing()
-
-    return render(request, 'ceritabali/refresh.html')
 
 def pengujian(request):
     if request.method == 'POST':
@@ -76,7 +69,7 @@ def pengujian(request):
             result = naive_bayes(doc_train,doc_test,terms_train,seleksi)
             evaluasi = confusion_matrix(doc_test,result)
             print('\nhasil seleksi fitur + NB (data test)')
-            for i in evaluasi.items(): print(i)\
+            for i in evaluasi.items(): print(i)
 
             context ={
                 'title' : 'Pengujian',
@@ -85,7 +78,7 @@ def pengujian(request):
                 'avg' : kromosom['avg'],
                 'evaluasi' : evaluasi
             }
-            return render(request, 'ceritabali/pengujian_cmd.html', context)
+            return render(request, 'ceritabali/pengujian.html', context)
 
         else:
             # EVALUASI NB DENGAN KFCV TANPA GA 
@@ -114,37 +107,14 @@ def pengujian(request):
                 'avg' : avg,
                 'evaluasi' : evaluasi
             }
-            return render(request, 'ceritabali/pengujian_cmd.html', context)
+            return render(request, 'ceritabali/pengujian.html', context)
 
     context ={
         'title' : 'Pengujian',
     }
-    return render(request, 'ceritabali/pengujian_cmd.html', context)
+    return render(request, 'ceritabali/pengujian.html', context)
 
-
-from .BahasBali.Stemmer.StemmerFactory import StemmerFactory
-from .BahasBali.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory
-import json
-def test(request):
-    text = 'I EMPAS SATUA Kocap wenten tlaga dahat ngulangunin pisan, kasub mawasta Kumudawati. Ring sisin-sisin telagane mauparengga sekancan sekar tur sami pade nedeng kembang, luir ipun sekar tunjung minakadi sekar tunjung bang, tunjung putih, tunjung biru lan sekar angsana, sekar jempiring kalih sane lian-lianan. Ring tlagane punika wenten angsa lua muani malali-lali sarwi manjus. Sane lua mawasta Ni Cankranggi sane muani mawasta I Cakrangga.'
-    
-    factory2 = StemmerFactory()
-    stemmer = factory2.create_stemmer()
-    stem = stemmer.stem(text)
-    
-    factory = StopWordRemoverFactory()
-    stopword = factory.create_stop_word_remover()
-    data = stopword.remove(stem)
-    # data_stopword = json.load(open('stopwords-bali.json','r'))
-    # stopwordPlus = set(data_stopword)
-    # data = " ".join([i for i in data.split() if i not in stopwordPlus])
-
-    print('Text awal :\n',text,'\n')
-    print('Text stemming :\n',stem,'\n')
-    print('Text filtering :\n',data,'\n')
-
-
-    context ={
-        'title' : 'Dataset',
-    }
-    return render(request, 'ceritabali/index.html', context)
+def refresh(request):
+    if request.method == 'POST':
+        preprocessing()
+    return render(request, 'ceritabali/refresh.html')
