@@ -73,7 +73,7 @@
                             <th scope="col">Fold-1</th>
                             <th scope="col">Fold-2</th>
                             <th scope="col">Fold-3</th>
-                            <th scope="col">Rata-rata</th>
+                            <th scope="col" colspan="2">Rata-rata</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -82,15 +82,16 @@
                             {% for key,value in fold.items %}
                                 <td>{{ value.akurasi }}%</td>
                             {% endfor %}
-                            <td>{{ avg.akurasi }}%</td>
+                            <td colspan="2">{{ avg.akurasi }}%</td>
                         </tr>
                         <tr>
                             <th scope="row" rowspan="3" style="vertical-align : middle;text-align:center;">Precision</th>
                             <th scope="row">Anak</th>
                             {% for key,value in fold.items %}
-                                <td>{{ value.precision.anak }}%</td>
+                            <td>{{ value.precision.anak }}%</td>
                             {% endfor %}
                             <td>{{ avg.precision.anak }}%</td>
+                            <td scope="row" rowspan="3" style="vertical-align : middle;text-align:center;">{{ avg_total.train.precision }}%</td>
                         </tr>
                         <tr>
                             <th scope="row">Remaja</th>
@@ -113,6 +114,7 @@
                                 <td>{{ value.recall.anak }}%</td>
                             {% endfor %}
                             <td>{{ avg.recall.anak }}%</td>
+                            <td scope="row" rowspan="3" style="vertical-align : middle;text-align:center;">{{ avg_total.train.recall }}%</td>
                         </tr>
                         <tr>
                             <th scope="row">Remaja</th>
@@ -135,6 +137,7 @@
                                 <td>{{ value.f_measure.anak }}%</td>
                             {% endfor %}
                             <td>{{ avg.f_measure.anak }}%</td>
+                            <td scope="row" rowspan="3" style="vertical-align : middle;text-align:center;">{{ avg_total.train.f_measure }}%</td>
                         </tr>
                         <tr>
                             <th scope="row">Remaja</th>
@@ -157,7 +160,7 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-8">
+    <div class="col-9">
         <div class="card">
             <h4 class="card-header">Hasil Evaluasi dengan Data Testing</h4>
             <div class="card-body">
@@ -165,18 +168,19 @@
                     <thead>
                         <tr>
                             <th scope="col" colspan="2">Evaluasi</th>
-                            <th scope="col">Value</th>
+                            <th scope="col" colspan="2">Value</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <th scope="row" colspan="2">Accuracy</th>
-                            <td>{{ evaluasi.akurasi }}%</td>
+                            <td colspan="2">{{ evaluasi.akurasi }}%</td>
                         </tr>
                         <tr>
                             <th scope="row" rowspan="3" style="vertical-align : middle;text-align:center;">Precision</th>
                             <th scope="row">Anak</th>
                             <td>{{ evaluasi.precision.anak }}%</td>
+                            <td scope="row" rowspan="3" style="vertical-align : middle;text-align:center;">{{ avg_total.test.precision }}%</td>
                         </tr>
                         <tr>
                             <th scope="row">Remaja</th>
@@ -190,6 +194,7 @@
                             <th scope="row" rowspan="3" style="vertical-align : middle;text-align:center;">Recall</th>
                             <th scope="row">Anak</th>
                             <td>{{ evaluasi.recall.anak }}%</td>
+                            <td scope="row" rowspan="3" style="vertical-align : middle;text-align:center;">{{ avg_total.test.recall }}%</td>
                         </tr>
                         <tr>
                             <th scope="row">Remaja</th>
@@ -203,6 +208,7 @@
                             <th scope="row" rowspan="3" style="vertical-align : middle;text-align:center;">F-Measure</th>
                             <th scope="row">Anak</th>
                             <td>{{ evaluasi.f_measure.anak }}%</td>
+                            <td scope="row" rowspan="3" style="vertical-align : middle;text-align:center;">{{ avg_total.test.f_measure }}%</td>
                         </tr>
                         <tr>
                             <th scope="row">Remaja</th>

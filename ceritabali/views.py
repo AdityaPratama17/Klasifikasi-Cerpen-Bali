@@ -47,6 +47,7 @@ def pengujian(request):
                 doc_test[doc] = docs[doc]
         
         if request.POST['seleksi'] == 'yes':
+            avg_total={}
             # SELEKSI FITUR
             generasi = int(request.POST['iterasi'])
             jum_kromosom = int(request.POST['kromosom'])
@@ -54,6 +55,13 @@ def pengujian(request):
             pc = float(request.POST['cr'])
             pm = float(request.POST['mr'])
             seleksi,kromosom = genetic_algorithm(doc_train,terms,generasi,jum_kromosom,jum_gen,pc,pm)
+            avg_total['train'] = {}
+            for i in kromosom['avg']:
+                if i != 'akurasi':
+                    jum = 0 
+                    for j in kromosom['avg'][i]:
+                        jum += kromosom['avg'][i][j]
+                    avg_total['train'][i] = round(jum/3,3)
             print('jum terms:',len(terms),', jum seleksi:',len(seleksi))
             print('\nhasil seleksi fitur (data train)')
             for i in kromosom['avg'].items(): print(i)
@@ -68,6 +76,13 @@ def pengujian(request):
             # -- TRAIN & TEST NAIVE BAYES
             result = naive_bayes(doc_train,doc_test,terms_train,seleksi)
             evaluasi = confusion_matrix(doc_test,result)
+            avg_total['test'] = {}
+            for i in evaluasi:
+                if i != 'akurasi':
+                    jum = 0 
+                    for j in evaluasi[i]:
+                        jum += evaluasi[i][j]
+                    avg_total['test'][i] = round(jum/3,3)
             print('\nhasil seleksi fitur + NB (data test)')
             for i in evaluasi.items(): print(i)
 
@@ -76,15 +91,24 @@ def pengujian(request):
                 'old' : request.POST,
                 'fold' : kromosom['fold'],
                 'avg' : kromosom['avg'],
-                'evaluasi' : evaluasi
+                'evaluasi' : evaluasi,
+                'avg_total': avg_total,
             }
             return render(request, 'ceritabali/pengujian.html', context)
 
         else:
+            avg_total = {}
             # EVALUASI NB DENGAN KFCV TANPA GA 
             seleksi = [1 for i in range(len(terms))]
             term_only = [i for i in terms]
             fold,avg,fitness = eval_kfcv(doc_train,terms,term_only,seleksi)
+            avg_total['train'] = {}
+            for i in avg:
+                if i != 'akurasi':
+                    jum = 0 
+                    for j in avg[i]:
+                        jum += avg[i][j]
+                    avg_total['train'][i] = round(jum/3,3)
             print('\nhasil tanpa seleksi fitur + NB (data train)')
             for i in avg.items(): print(i)
 
@@ -97,6 +121,13 @@ def pengujian(request):
                         terms_train[term] = terms[term]
             result = naive_bayes(doc_train,doc_test,terms_train,seleksi)
             evaluasi = confusion_matrix(doc_test,result)
+            avg_total['test'] = {}
+            for i in evaluasi:
+                if i != 'akurasi':
+                    jum = 0 
+                    for j in evaluasi[i]:
+                        jum += evaluasi[i][j]
+                    avg_total['test'][i] = round(jum/3,3)
             print('\nhasil tanpa seleksi fitur + NB (data test)')
             for i in evaluasi.items(): print(i)
 
@@ -105,7 +136,8 @@ def pengujian(request):
                 'old' : request.POST,
                 'fold' : fold,
                 'avg' : avg,
-                'evaluasi' : evaluasi
+                'evaluasi' : evaluasi,
+                'avg_total': avg_total,
             }
             return render(request, 'ceritabali/pengujian.html', context)
 
