@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import Document, Term, TF
 from .scripts.preprocessing import preprocessing, get_data
-from .scripts.naive_bayes import naive_bayes
+from .scripts.naive_bayes import naive_bayes, test as testing_nb
 from .scripts.evaluasi import confusion_matrix
 from .scripts.genetic_algorithm import genetic_algorithm, evaluasi as eval_kfcv
 
@@ -35,6 +35,116 @@ def detail(request, id):
     return render(request, 'ceritabali/detail.html', context)
 
 def pengujian(request):
+    if request.method == 'POST':
+        # GET DATA
+        docs,terms = get_data()
+        doc_test = {}
+        doc_train = {}
+        for doc in docs:
+            if docs[doc]['tipe'] == 'train':
+                doc_train[doc] = docs[doc]
+            else:
+                doc_test[doc] = docs[doc]
+        
+        for i in range(1,4):
+            # GET DATA TRAIN & TEST
+            doc_train_fold = {}
+            doc_test_fold = {}
+            terms_train = {}
+            for doc in doc_train:
+                if doc_train[doc]['fold'] == i:
+                    doc_test_fold[doc] = doc_train[doc]
+                else:
+                    doc_train_fold[doc] = doc_train[doc]
+                    # GET TERMS IN DATA TRAIN
+                    for term in doc_train[doc]['term']:
+                        if term not in terms_train:
+                            terms_train[term] = terms[term]
+            
+            # DENGAN SELEKSI FITUR
+            if request.POST['seleksi'] == 'yes':
+                generasi = int(request.POST['iterasi'])
+                jum_kromosom = int(request.POST['kromosom'])
+                pc = float(request.POST['cr'])
+                pm = float(request.POST['mr'])
+                model,evaluasi = genetic_algorithm(doc_train_fold,doc_test_fold,terms_train,generasi,jum_kromosom,len(terms_train),pc,pm)
+
+            # TANPA SELEKSI FITUR
+            else:
+                result,model = naive_bayes(doc_train_fold,doc_test_fold,terms_train)
+                evaluasi = confusion_matrix(doc_test_fold,result)
+            
+            print('\nHasil Evaluasi Fold Ke',i,'='*70)
+            for j in evaluasi.items(): print(j)
+
+            # GET BEST MODEL
+            if i == 1:
+                best = {'model':model, 'evaluasi':evaluasi}
+            else:
+                if best['evaluasi']['akurasi'] < evaluasi['akurasi']:
+                    best = {'model':model, 'evaluasi':evaluasi}
+        
+        print('\nHasil Evaluasi Model Terbaik :','='*70)
+        for i in best['evaluasi'].items(): print(i)
+        # print('\nJumlah Fitur yang digunakan :',len(best['model']['prob_term']),' dari',len(terms),'='*70)
+
+        # EVALUASI DATA TESTING (CEK OVERFITTING)
+        result = testing_nb(doc_test,terms,best['model']['jum_term_kelas'],best['model']['prob_term'])
+        evaluasi = confusion_matrix(doc_test,result)
+        print('\nHasil Evaluasi Data Testing :','='*70)
+        for i in evaluasi.items(): print(i)
+
+        context ={
+                'title' : 'Pengujian',
+                'old' : request.POST,
+                # 'fold' : kromosom['fold'],
+                # 'avg' : kromosom['avg'],
+                # 'evaluasi' : evaluasi,
+                # 'avg_total': avg_total,
+            }
+        return render(request, 'ceritabali/pengujian.html', context)
+    
+    context ={
+        'title' : 'Pengujian',
+    }
+    return render(request, 'ceritabali/pengujian.html', context)
+
+def pengujian_NB_GA(docs,terms,generasi,jum_kromosom,pc,pm):
+    for i in range(1,4):
+        # GET DATA TRAIN & TEST
+        doc_train = {}
+        doc_test = {}
+        terms_train = {}
+        for doc in docs:
+            if docs[doc]['fold'] == i:
+                doc_test[doc] = docs[doc]
+            else:
+                doc_train[doc] = docs[doc]
+                # GET TERMS IN DATA TRAIN
+                for term in docs[doc]['term']:
+                    if term not in terms_train:
+                        terms_train[term] = terms[term]
+        
+        # SELEKSI FITUR
+        # model,evaluasi = genetic_algorithm(doc_train,doc_test,terms_train,generasi,jum_kromosom,len(terms_train),pc,pm)
+
+        # TANPA SELEKSI FITUR
+        result,model = naive_bayes(doc_train,doc_test,terms_train)
+        evaluasi = confusion_matrix(doc_test,result)
+        
+        print('\nHasil Evaluasi Fold Ke',i,'='*70)
+        for j in evaluasi.items(): print(j)
+
+        # GET BEST MODEL
+        if i == 1:
+            best = {'model':model, 'evaluasi':evaluasi}
+        else:
+            if best['evaluasi']['akurasi'] < evaluasi['akurasi']:
+                best = {'model':model, 'evaluasi':evaluasi}
+        
+    return best['model'],best['evaluasi']
+
+def pengujian_bc(request):
     if request.method == 'POST':
         # GET DATA
         docs,terms = get_data()

@@ -1,30 +1,27 @@
-def naive_bayes(doc_train,doc_test,terms,seleksi):
+def naive_bayes(doc_train,doc_test,terms):
     # -- Training
-    jum_term_kelas,prob_term = train(doc_train,terms,seleksi)
-
+    jum_term_kelas,prob_term = train(doc_train,terms)
     # -- Testing
     result = test(doc_test,terms,jum_term_kelas,prob_term)
     
-    return result 
+    return result, {'jum_term_kelas':jum_term_kelas,'prob_term':prob_term}
 
-
-def train(doc_train,terms,seleksi):
+def train(doc_train,terms):
     jum_term_kelas = {'anak':0,'remaja':0,'dewasa':0}
     prob_term = {}
     for term in terms:
-        if term in seleksi :
-            prob_term[term] = {'anak':0,'remaja':0,'dewasa':0}
-            for doc in doc_train:
-                if doc_train[doc]['id'] in terms[term]:
-                    if doc_train[doc]['kelas'] == 'anak':
-                        jum_term_kelas['anak'] += terms[term][doc_train[doc]['id']]
-                        prob_term[term]['anak'] += terms[term][doc_train[doc]['id']]
-                    elif doc_train[doc]['kelas'] == 'remaja':
-                        jum_term_kelas['remaja'] += terms[term][doc_train[doc]['id']]
-                        prob_term[term]['remaja'] += terms[term][doc_train[doc]['id']]
-                    elif doc_train[doc]['kelas'] == 'dewasa':
-                        jum_term_kelas['dewasa'] += terms[term][doc_train[doc]['id']]
-                        prob_term[term]['dewasa'] += terms[term][doc_train[doc]['id']]
+        prob_term[term] = {'anak':0,'remaja':0,'dewasa':0}
+        for doc in doc_train:
+            if doc_train[doc]['id'] in terms[term]:
+                if doc_train[doc]['kelas'] == 'anak':
+                    jum_term_kelas['anak'] += terms[term][doc_train[doc]['id']]
+                    prob_term[term]['anak'] += terms[term][doc_train[doc]['id']]
+                elif doc_train[doc]['kelas'] == 'remaja':
+                    jum_term_kelas['remaja'] += terms[term][doc_train[doc]['id']]
+                    prob_term[term]['remaja'] += terms[term][doc_train[doc]['id']]
+                elif doc_train[doc]['kelas'] == 'dewasa':
+                    jum_term_kelas['dewasa'] += terms[term][doc_train[doc]['id']]
+                    prob_term[term]['dewasa'] += terms[term][doc_train[doc]['id']]
     
     for term in prob_term:
         prob_term[term]['anak'] = (prob_term[term]['anak']+1)/(jum_term_kelas['anak']+len(terms))

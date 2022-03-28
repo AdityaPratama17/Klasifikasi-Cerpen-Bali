@@ -2,17 +2,17 @@ from .naive_bayes import naive_bayes
 from .evaluasi import confusion_matrix
 import numpy as np, random
 
-def genetic_algorithm(docs,terms_full,generasi,jum_kromosom,jum_gen,pc,pm):
+def genetic_algorithm(doc_train,doc_test,terms_full,generasi,jum_kromosom,jum_gen,pc,pm):
     # INIT POPULATION
     kromosom,terms = init_population(terms_full,jum_kromosom,jum_gen)
     # EVALUATE
     total_fitness = 0
     for kr in kromosom:
-        kr['fold'],kr['avg'],kr['fitness'] = evaluasi(docs,terms_full,terms,kr['fitur'])
+        kr['fitness'],kr['model'],kr['evaluasi'] = evaluasi(doc_train,doc_test,terms_full,terms,kr['fitur'])
         total_fitness += kr['fitness']
 
     # ITERATE BY GENERASI
-    for i in range(generasi+1):
+    for i in range(generasi):
         # SELECTION
         kromosom = selection(kromosom,jum_kromosom,total_fitness)
         # CROSSOVER
@@ -23,8 +23,8 @@ def genetic_algorithm(docs,terms_full,generasi,jum_kromosom,jum_gen,pc,pm):
         # -- evaluasi offspring
         for i in offspring:
             if sum(i) != jum_gen and sum(i) != 0:
-                fold,avg,fitnes = evaluasi(docs,terms_full,terms,i)
-                kromosom.append({'fitur':i, 'fitness':fitnes, 'fold':fold, 'avg':avg})
+                fitness,model,eval = evaluasi(doc_train,doc_test,terms_full,terms,i)
+                kromosom.append({'fitur':i, 'fitness':fitness, 'model':model, 'evaluasi':eval})
         # -- sort & get new population
         for n in range(len(kromosom)-1, 0, -1):
             for i in range(n):
@@ -45,14 +45,8 @@ def genetic_algorithm(docs,terms_full,generasi,jum_kromosom,jum_gen,pc,pm):
                 best = kr
             elif kr['fitness'] == best['fitness'] and sum(kr['fitur']) < sum(best['fitur']):
                 best = kr
-
-    # GET RESULT FEATURE SELECTION
-    seleksi = []
-    for i,fitur in enumerate(best['fitur']):
-        if fitur == 1:
-            seleksi.append(terms[i])
     
-    return seleksi, best
+    return kr['model'],kr['evaluasi']
 
 def init_population(terms_full,jum_kromosom,jum_gen):
     kromosom = []
@@ -70,7 +64,25 @@ def init_population(terms_full,jum_kromosom,jum_gen):
     
     return kromosom,terms
 
-def evaluasi(docs,terms,terms_only,fiturs):
+def evaluasi(doc_train,doc_test,terms,terms_only,fiturs):
+    # SELECT TERM BY SELEKSI
+    new_terms = {}
+    for i,fitur in enumerate(fiturs):
+        if fitur == 1:
+            new_terms[terms_only[i]] = terms[terms_only[i]]
+    
+    # TRAIN & TEST
+    result,model = naive_bayes(doc_train,doc_test,new_terms)
+    evaluasi = confusion_matrix(doc_test,result)
+
+    fitness = 0
+    for i in evaluasi['f_measure']:
+        fitness += evaluasi['f_measure'][i]
+    fitness = round(fitness/3,5)
+
+    return fitness,model,evaluasi
+
+def evaluasi_bc(docs,terms,terms_only,fiturs):
     # SELECT TERM BY SELEKSI
     seleksi = []
     for i,fitur in enumerate(fiturs):
@@ -96,7 +108,7 @@ def evaluasi(docs,terms,terms_only,fiturs):
                 doc_train[doc] = docs[doc]
                 # GET TERMS IN DATA TRAIN
                 for term in docs[doc]['term']:
-                    if term not in terms_train:
+                    if term not in terms_train and term in seleksi:
                         terms_train[term] = terms[term]
         
         # TRAIN & TEST
