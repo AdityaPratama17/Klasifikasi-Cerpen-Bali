@@ -109,41 +109,6 @@ def pengujian(request):
     }
     return render(request, 'ceritabali/pengujian.html', context)
 
-def pengujian_NB_GA(docs,terms,generasi,jum_kromosom,pc,pm):
-    for i in range(1,4):
-        # GET DATA TRAIN & TEST
-        doc_train = {}
-        doc_test = {}
-        terms_train = {}
-        for doc in docs:
-            if docs[doc]['fold'] == i:
-                doc_test[doc] = docs[doc]
-            else:
-                doc_train[doc] = docs[doc]
-                # GET TERMS IN DATA TRAIN
-                for term in docs[doc]['term']:
-                    if term not in terms_train:
-                        terms_train[term] = terms[term]
-        
-        # SELEKSI FITUR
-        # model,evaluasi = genetic_algorithm(doc_train,doc_test,terms_train,generasi,jum_kromosom,len(terms_train),pc,pm)
-
-        # TANPA SELEKSI FITUR
-        result,model = naive_bayes(doc_train,doc_test,terms_train)
-        evaluasi = confusion_matrix(doc_test,result)
-        
-        print('\nHasil Evaluasi Fold Ke',i,'='*70)
-        for j in evaluasi.items(): print(j)
-
-        # GET BEST MODEL
-        if i == 1:
-            best = {'model':model, 'evaluasi':evaluasi}
-        else:
-            if best['evaluasi']['akurasi'] < evaluasi['akurasi']:
-                best = {'model':model, 'evaluasi':evaluasi}
-        
-    return best['model'],best['evaluasi']
-
 def pengujian_bc(request):
     if request.method == 'POST':
         # GET DATA
