@@ -41,6 +41,9 @@ def confusion_matrix(doc_test,result):
             f_measure[aktual] = 0
         
     akurasi = round((akurasi/len(doc_test))*100,3)
+    precision['avg'] = round(sum(precision.values())/3,3)
+    recall['avg'] = round(sum(recall.values())/3,3)
+    f_measure['avg'] = round(sum(f_measure.values())/3,3)
 
     return {'akurasi':akurasi,'precision':precision,'recall':recall,'f_measure':f_measure}
 

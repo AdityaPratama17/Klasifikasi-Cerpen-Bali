@@ -75,12 +75,12 @@ def evaluasi(doc_train,doc_test,terms,terms_only,fiturs):
     result,model = naive_bayes(doc_train,doc_test,new_terms)
     evaluasi = confusion_matrix(doc_test,result)
 
-    fitness = 0
-    for i in evaluasi['f_measure']:
-        fitness += evaluasi['f_measure'][i]
-    fitness = round(fitness/3,5)
+    # fitness = round(sum(evaluasi['f_measure'].values())/3,3)
+    # for i in evaluasi['f_measure']:
+    #     fitness += evaluasi['f_measure'][i]
+    # fitness = round(fitness/3,5)
 
-    return fitness,model,evaluasi
+    return evaluasi['f_measure']['avg'],model,evaluasi
 
 def evaluasi_bc(docs,terms,terms_only,fiturs):
     # SELECT TERM BY SELEKSI

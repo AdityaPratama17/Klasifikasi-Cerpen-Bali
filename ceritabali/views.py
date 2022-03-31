@@ -76,16 +76,18 @@ def pengujian(request):
             
             print('\nHasil Evaluasi Fold Ke',i,'='*70)
             for j in evaluasi.items(): print(j)
+            # print('f-measure:',evaluasi['f_measure']['avg'])
 
             # GET BEST MODEL
             if i == 1:
                 best = {'model':model, 'evaluasi':evaluasi}
             else:
-                if best['evaluasi']['akurasi'] < evaluasi['akurasi']:
+                if best['evaluasi']['f_measure']['avg'] < evaluasi['f_measure']['avg']:
                     best = {'model':model, 'evaluasi':evaluasi}
         
         print('\nHasil Evaluasi Model Terbaik :','='*70)
         for i in best['evaluasi'].items(): print(i)
+        # print('f-measure:',best['evaluasi']['f_measure']['avg'])
         # print('\nJumlah Fitur yang digunakan :',len(best['model']['prob_term']),' dari',len(terms),'='*70)
 
         # EVALUASI DATA TESTING (CEK OVERFITTING)
@@ -93,6 +95,7 @@ def pengujian(request):
         evaluasi = confusion_matrix(doc_test,result)
         print('\nHasil Evaluasi Data Testing :','='*70)
         for i in evaluasi.items(): print(i)
+        # print('f-measure:',evaluasi['f_measure']['avg'])
 
         context ={
                 'title' : 'Pengujian',
