@@ -2,13 +2,13 @@ from .naive_bayes import naive_bayes
 from .evaluasi import confusion_matrix
 import numpy as np, random
 
-def genetic_algorithm(doc_train,doc_test,terms_full,generasi,jum_kromosom,jum_gen,pc,pm):
+def genetic_algorithm(docs,terms_full,generasi,jum_kromosom,jum_gen,pc,pm):
     # INIT POPULATION
     kromosom,terms = init_population(terms_full,jum_kromosom,jum_gen)
     # EVALUATE
     total_fitness = 0
     for kr in kromosom:
-        kr['fitness'],kr['model'],kr['evaluasi'] = evaluasi(doc_train,doc_test,terms_full,terms,kr['fitur'])
+        kr['fitness'],kr['model'],kr['evaluasi'] = evaluasi(docs,terms_full,terms,kr['fitur'])
         total_fitness += kr['fitness']
 
     # ITERATE BY GENERASI
@@ -23,7 +23,7 @@ def genetic_algorithm(doc_train,doc_test,terms_full,generasi,jum_kromosom,jum_ge
         # -- evaluasi offspring
         for i in offspring:
             if sum(i) != jum_gen and sum(i) != 0:
-                fitness,model,eval = evaluasi(doc_train,doc_test,terms_full,terms,i)
+                fitness,model,eval = evaluasi(docs,terms_full,terms,i)
                 kromosom.append({'fitur':i, 'fitness':fitness, 'model':model, 'evaluasi':eval})
         # -- sort & get new population
         for n in range(len(kromosom)-1, 0, -1):
@@ -64,7 +64,42 @@ def init_population(terms_full,jum_kromosom,jum_gen):
     
     return kromosom,terms
 
-def evaluasi(doc_train,doc_test,terms,terms_only,fiturs):
+def evaluasi(docs,terms,terms_only,fiturs):
+    # SELECT TERM BY SELEKSI
+    new_terms = {}
+    for i,fitur in enumerate(fiturs):
+        if fitur == 1:
+            new_terms[terms_only[i]] = terms[terms_only[i]]
+
+    for i in range(1,4):
+        # GET DATA TRAIN & TEST
+        doc_train = {}
+        doc_test = {}
+        terms_train = {}
+        for doc in docs:
+            if docs[doc]['fold'] == i:
+                doc_test[doc] = docs[doc]
+            else:
+                doc_train[doc] = docs[doc]
+                # GET TERMS IN DATA TRAIN
+                for term in docs[doc]['term']:
+                    if term not in terms_train and term in new_terms:
+                        terms_train[term] = terms[term]
+    
+        # TRAIN & TEST
+        result,model = naive_bayes(doc_train,doc_test,terms_train)
+        evaluasi = confusion_matrix(doc_test,result)
+
+        # GET BEST MODEL
+        if i == 1:
+            best = {'model':model, 'evaluasi':evaluasi}
+        else:
+            if best['evaluasi']['f_measure']['avg'] < evaluasi['f_measure']['avg']:
+                best = {'model':model, 'evaluasi':evaluasi}
+
+    return best['evaluasi']['f_measure']['avg'],best['model'],best['evaluasi']
+
+def evaluasi_bc_2(doc_train,doc_test,terms,terms_only,fiturs):
     # SELECT TERM BY SELEKSI
     new_terms = {}
     for i,fitur in enumerate(fiturs):
@@ -74,11 +109,6 @@ def evaluasi(doc_train,doc_test,terms,terms_only,fiturs):
     # TRAIN & TEST
     result,model = naive_bayes(doc_train,doc_test,new_terms)
     evaluasi = confusion_matrix(doc_test,result)
-
-    # fitness = round(sum(evaluasi['f_measure'].values())/3,3)
-    # for i in evaluasi['f_measure']:
-    #     fitness += evaluasi['f_measure'][i]
-    # fitness = round(fitness/3,5)
 
     return evaluasi['f_measure']['avg'],model,evaluasi
 

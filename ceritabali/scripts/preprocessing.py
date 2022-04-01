@@ -15,7 +15,7 @@ def preprocessing():
     stemmer = factory2.create_stemmer()
 
     split_data()
-    oversampling()
+    sampling()
     terms,id_doc,id_tf = preprocessing_test(stopword,stemmer)
     preprocessing_train(stopword,stemmer,terms,id_doc,id_tf)
 
@@ -32,8 +32,8 @@ def split_data():
     all_files = os.listdir("static/Data Cerpen - full")
     all_files = random.sample(all_files, len(all_files))
     jum_data = {
-        'Training': {'anak':18,'remaja':27,'dewasa':45},
-        'Testing': {'anak':2,'remaja':3,'dewasa':5}
+        'Training': {'anak':16,'remaja':24,'dewasa':40},
+        'Testing': {'anak':4,'remaja':6,'dewasa':10}
     } 
     for name_file in all_files:
         # -- get doc & kelas
@@ -56,10 +56,10 @@ def split_data():
                         break
             if flag: break
 
-def oversampling():
+def sampling():
     jum_data = {
-        'Training':{'anak':27,'remaja':18,'dewasa':0},
-        'Testing':{'anak':3,'remaja':2,'dewasa':0},
+        'Training':{'anak':8,'remaja':0,'dewasa':16},
+        'Testing':{'anak':2,'remaja':0,'dewasa':4},
     }
     for tipe in jum_data:
         # -- hapus file sampling
@@ -71,8 +71,7 @@ def oversampling():
         all_files = os.listdir("static/Data Cerpen/Data "+tipe)
         all_files = random.sample(all_files, len(all_files))
         for i in jum_data[tipe]:
-            iter = 1
-            while(jum_data[tipe][i] > 0):
+            if i == 'anak':
                 for name_file in all_files:
                     kelas = name_file.split(' - ')
                     if kelas[0] == i:
@@ -80,11 +79,18 @@ def oversampling():
                             file = open("static/Data Cerpen/Data "+tipe+"/"+name_file,"r")
                             doc = file.readlines()
                             file.close()
-                            f = open("static/Data Cerpen/Data "+tipe+"/"+name_file+" [sampling] "+str(iter)+".txt", "w")
+                            f = open("static/Data Cerpen/Data "+tipe+"/"+name_file+" [sampling].txt", "w")
                             for j in doc: f.write(j)
                             f.close()
                             jum_data[tipe][i]-=1
-                iter+=1
+            
+            if i =='dewasa':
+                for name_file in all_files:
+                    kelas = name_file.split(' - ')
+                    if kelas[0] == i:
+                        if jum_data[tipe][i] > 0:
+                            os.remove("static/Data Cerpen/Data "+tipe+"/"+name_file)
+                            jum_data[tipe][i]-=1
 
 def preprocessing_test(stopword,stemmer):
     all_files = os.listdir("static/Data Cerpen/Data Testing")
@@ -163,9 +169,9 @@ def preprocessing_train(stopword,stemmer,terms,id_doc,id_tf):
     all_files = os.listdir("static/Data Cerpen/Data Training")
     all_files = random.sample(all_files, len(all_files))
     kelas_train = {
-        '1' : {'anak':15,'remaja':15,'dewasa':15},
-        '2' : {'anak':15,'remaja':15,'dewasa':15},
-        '3' : {'anak':15,'remaja':15,'dewasa':15},
+        '1' : {'anak':8,'remaja':8,'dewasa':8},
+        '2' : {'anak':8,'remaja':8,'dewasa':8},
+        '3' : {'anak':8,'remaja':8,'dewasa':8},
     }
     for id,name_file in enumerate(all_files):
         # READ DOCUMENTS
