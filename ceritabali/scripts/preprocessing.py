@@ -132,14 +132,14 @@ def preprocessing_test(stopword,stemmer):
         tokens = tokens.strip()
         #remove multiple whitespace into single whitespace
         tokens = re.sub('\s+',' ',tokens)
-        # -- normalization
-        tokens = tokens.replace('ã©', 'e').replace('ã¨', 'e').replace('ï¿½', 'e')
-        # -- filetering
-        tokens = stopword.remove(tokens)
-        # -- stemming
-        tokens = stemmer.stem(tokens)
         # -- tokenisasi
         tokens = word_tokenize(tokens)
+        # -- normalization
+        tokens = [i.replace('ã©', 'e').replace('ã¨', 'e').replace('ï¿½', 'e') for i in tokens]
+        # -- filetering
+        tokens = [stopword.remove(i) for i in tokens]
+        # -- stemming
+        tokens = [stemmer.stem(i) for i in tokens]
 
         # UNIQUE TERM & TERM FREQUENCY (TF)
         unique_terms = list(set(tokens))
@@ -239,14 +239,14 @@ def preprocessing_train(stopword,stemmer,terms,id_doc,id_tf):
         tokens = tokens.strip()
         #remove multiple whitespace into single whitespace
         tokens = re.sub('\s+',' ',tokens)
-        # -- normalization
-        tokens = tokens.replace('ã©', 'e').replace('ã¨', 'e').replace('ï¿½', 'e')
-        # -- filetering
-        tokens = stopword.remove(tokens)
-        # -- stemming
-        tokens = stemmer.stem(tokens)
         # -- tokenisasi
         tokens = word_tokenize(tokens)
+        # -- normalization
+        tokens = [i.replace('ã©', 'e').replace('ã¨', 'e').replace('ï¿½', 'e') for i in tokens]
+        # -- filetering
+        tokens = [stopword.remove(i) for i in tokens]
+        # -- stemming
+        tokens = [stemmer.stem(i) for i in tokens]
 
         # UNIQUE TERM & TERM FREQUENCY (TF)
         unique_terms = list(set(tokens))

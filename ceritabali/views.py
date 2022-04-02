@@ -58,8 +58,6 @@ def pengujian(request):
             pc = float(request.POST['cr'])
             pm = float(request.POST['mr'])
             model,evaluasi = genetic_algorithm(doc_train,terms_train,generasi,jum_kromosom,len(terms_train),pc,pm)
-            print('\nHasil Evaluasi K-Fold Cross Validation :')
-            for i in evaluasi.items(): print(i)
         
         # TANPA SELEKSI FITUR
         else:
@@ -88,17 +86,21 @@ def pengujian(request):
                 else:
                     if best['evaluasi']['f_measure']['avg'] < evaluasi['f_measure']['avg']:
                         best = {'model':model, 'evaluasi':evaluasi}
-            
             model = best['model']
             evaluasi = best['evaluasi']
-            print('\nHasil Evaluasi K-Fold Cross Validation :')
-            for i in evaluasi.items(): print(i)
+        
+        print('\nHasil Evaluasi K-Fold Cross Validation :')
+        for i in evaluasi: 
+            if i == 'akurasi': print(i,'=',evaluasi[i])
+            if i != 'akurasi': print(i,'=',evaluasi[i]['avg'])
             
         # EVALUASI DATA TESTING (CEK OVERFITTING)
         result = testing_nb(doc_test,terms,model['jum_term_kelas'],model['prob_term'])
         evaluasi = confusion_matrix(doc_test,result)
         print('\nHasil Evaluasi Data Testing :')
-        for i in evaluasi.items(): print(i)
+        for i in evaluasi: 
+            if i == 'akurasi': print(i,'=',evaluasi[i])
+            if i != 'akurasi': print(i,'=',evaluasi[i]['avg'])
 
         context ={
                 'title' : 'Pengujian',

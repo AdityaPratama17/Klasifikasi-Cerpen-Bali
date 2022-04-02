@@ -30,7 +30,6 @@ def train(doc_train,terms):
 
     return jum_term_kelas,prob_term
 
-
 def test(doc_test,terms,jum_term_kelas,prob_term):
     result = {}
     for doc in doc_test:
