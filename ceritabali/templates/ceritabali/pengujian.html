@@ -61,6 +61,76 @@
 </div>
 
 
+{% if old %}
+<div class="row">
+    <div class="col-6">
+        <div class="card">
+            <h4 class="card-header">Hasil Evaluasi dengan Data Training</h4>
+            <div class="card-body">
+                <table class="table mb-0 text-center table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Evaluasi</th>
+                            <th scope="col">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">Accuracy</th>
+                            <td>{{ evaluasi_train.akurasi }}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Precision</th>
+                            <td>{{ evaluasi_train.precision.avg }}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Recall</th>
+                            <td>{{ evaluasi_train.recall.avg }}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">F1-Score</th>
+                            <td>{{ evaluasi_train.f_measure.avg }}%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="card">
+            <h4 class="card-header">Hasil Evaluasi dengan Data Testing</h4>
+            <div class="card-body">
+                <table class="table mb-0 text-center table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Evaluasi</th>
+                            <th scope="col">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">Accuracy</th>
+                            <td>{{ evaluasi_test.akurasi }}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Precision</th>
+                            <td>{{ evaluasi_test.precision.avg }}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Recall</th>
+                            <td>{{ evaluasi_test.recall.avg }}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">F1-Score</th>
+                            <td>{{ evaluasi_test.f_measure.avg }}%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 
 {% endblock content %}
     

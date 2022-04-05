@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="">Home</a></li>
+                    <li class="breadcrumb-item active">Klasifikasi</li>
+                </ol>
+            </div>
+            <h4 class="page-title">Klasifikasi</h4>
+        </div>
+    </div>
+</div>  
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                {% if result %}
+                <div class="alert alert-{{ result.color }}" role="alert">
+                    Cerita pendek bahasa Bali terklasifikasi pada kelas <b>{{ result.kelas }}</b>.
+                </div>
+                {% endif %}
+
+                <form action="{% url 'ceritabali:klasifikasi' %}" method="post">
+                    {% csrf_token %}
+                    <div class="row">              
+                        <div class="mb-3 col-12">
+                            <label for="judul" class="form-label">Judul Cerpen</label>
+                            <input type="text" id="judul" class="form-control" name="judul"
+                            {% if old.judul %} value="{{ old.judul }}"{% endif %} required>
+                        </div>                
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-12">
+                            <label for="isi" class="form-label">Isi Cerpen</label>
+                            <textarea class="form-control" id="isi" name="isi" rows="5" required>{% if old.isi %}{{ old.isi }}{% endif %}</textarea>
+                        </div>                
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary"><i class="uil-sync"></i> Process</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+    
