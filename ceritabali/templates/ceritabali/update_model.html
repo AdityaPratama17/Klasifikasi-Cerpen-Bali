@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="">Home</a></li>
+                    <li class="breadcrumb-item"><a href="">Klasifikasi</a></li>
+                    <li class="breadcrumb-item active">Update Model</li>
+                </ol>
+            </div>
+            <h4 class="page-title">Update Model</h4>
+        </div>
+    </div>
+</div>  
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form action="{% url 'ceritabali:update_model' %}" method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="mb-3 col-6">
+                            <label for="iterasi" class="form-label">Jumlah Iterasi</label>
+                            <input type="text" id="iterasi" class="form-control" name="iterasi"
+                            {% if old.iterasi %} value="{{ old.iterasi }}"{% endif %} required>
+                        </div>                
+                        <div class="mb-3 col-6">
+                            <label for="kromosom" class="form-label">Jumlah Kromosom</label>
+                            <input type="text" id="kromosom" class="form-control" name="kromosom"
+                            {% if old.kromosom %} value="{{ old.kromosom }}"{% endif %} required>
+                        </div>                
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-6">
+                            <label for="cr" class="form-label">Crossover Rate</label>
+                            <input type="text" id="cr" class="form-control" name="cr"
+                            {% if old.cr %} value="{{ old.cr }}"{% endif %} required>
+                        </div>                
+                        <div class="mb-3 col-6">
+                            <label for="mr" class="form-label">Mutation Rate</label>
+                            <input type="text" id="mr" class="form-control" name="mr"
+                            {% if old.mr %} value="{{ old.mr }}"{% endif %} required>
+                        </div>                
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary"><i class="uil-sync"></i> Update Model</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+    

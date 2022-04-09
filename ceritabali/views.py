@@ -113,17 +113,6 @@ def pengujian(request):
         
         print('\nHasil Evaluasi K-Fold Cross Validation :')
         for i in fold.items(): print(i)
-
-        # SAVE MODEL
-        Term_prob.objects.all().delete()
-        for id,term in enumerate(model): 
-            Term_prob.objects.create(
-                id = id+1,
-                term = term,
-                anak = model[term]['anak'],            
-                remaja = model[term]['remaja'],            
-                dewasa = model[term]['dewasa'],            
-            )
             
         # EVALUASI DATA TESTING (CEK OVERFITTING)
         result = testing_nb(doc_test,model)
@@ -221,6 +210,49 @@ def klasifikasi(request):
         'title' : 'Klasifikasi',
     }
     return render(request, 'ceritabali/klasifikasi.html', context)
+
+def update_model(request):
+    if request.method == 'POST':
+        # GET DATA
+        docs,terms = get_data()
+        doc_test = {}
+        doc_train = {}
+        terms_train = {}
+        for doc in docs:
+            if docs[doc]['tipe'] == 'train':
+                doc_train[doc] = docs[doc]
+                # GET TERMS IN DATA TRAIN
+                for term in docs[doc]['term']:
+                    if term not in terms_train:
+                        terms_train[term] = terms[term]
+            else:
+                doc_test[doc] = docs[doc]
+        
+        generasi = int(request.POST['iterasi'])
+        jum_kromosom = int(request.POST['kromosom'])
+        pc = float(request.POST['cr'])
+        pm = float(request.POST['mr'])
+        model,fold = genetic_algorithm(doc_train,terms_train,generasi,jum_kromosom,len(terms_train),pc,pm)
+        model = model['prob_term']
+
+        # SAVE MODEL
+        Term_prob.objects.all().delete()
+        for id,term in enumerate(model): 
+            Term_prob.objects.create(
+                id = id+1,
+                term = term,
+                anak = model[term]['anak'],            
+                remaja = model[term]['remaja'],            
+                dewasa = model[term]['dewasa'],            
+            )
+
+        return redirect('ceritabali:klasifikasi')
+
+    context ={
+        'title' : 'Update Model',
+    }
+    return render(request, 'ceritabali/update_model.html', context)
+
 
 def refresh(request):
     if request.method == 'POST':
