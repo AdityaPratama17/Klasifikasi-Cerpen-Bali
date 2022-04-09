@@ -8,7 +8,7 @@ def genetic_algorithm(docs,terms_full,generasi,jum_kromosom,jum_gen,pc,pm):
     # EVALUATE
     total_fitness = 0
     for kr in kromosom:
-        kr['fitness'],kr['model'],kr['evaluasi'] = evaluasi(docs,terms_full,terms,kr['fitur'])
+        kr['fitness'],kr['model'],kr['fold'] = evaluasi(docs,terms_full,terms,kr['fitur'])
         total_fitness += kr['fitness']
 
     # ITERATE BY GENERASI
@@ -23,8 +23,8 @@ def genetic_algorithm(docs,terms_full,generasi,jum_kromosom,jum_gen,pc,pm):
         # -- evaluasi offspring
         for i in offspring:
             if sum(i) != jum_gen and sum(i) != 0:
-                fitness,model,eval = evaluasi(docs,terms_full,terms,i)
-                kromosom.append({'fitur':i, 'fitness':fitness, 'model':model, 'evaluasi':eval})
+                fitness,model,fold = evaluasi(docs,terms_full,terms,i)
+                kromosom.append({'fitur':i, 'fitness':fitness, 'model':model, 'fold':fold})
         # -- sort & get new population
         for n in range(len(kromosom)-1, 0, -1):
             for i in range(n):
@@ -46,7 +46,7 @@ def genetic_algorithm(docs,terms_full,generasi,jum_kromosom,jum_gen,pc,pm):
             elif kr['fitness'] == best['fitness'] and sum(kr['fitur']) < sum(best['fitur']):
                 best = kr
     
-    return kr['model'],kr['evaluasi']
+    return best['model'],best['fold']
 
 def init_population(terms_full,jum_kromosom,jum_gen):
     kromosom = []
@@ -70,6 +70,13 @@ def evaluasi(docs,terms,terms_only,fiturs):
     for i,fitur in enumerate(fiturs):
         if fitur == 1:
             new_terms[terms_only[i]] = terms[terms_only[i]]
+
+    fold = {
+        'akurasi' : {'fold-1':0,'fold-2':0,'fold-3':0,'avg':0},
+        'precision' : {'fold-1':0,'fold-2':0,'fold-3':0,'avg':0},
+        'recall' : {'fold-1':0,'fold-2':0,'fold-3':0,'avg':0},
+        'f_measure' : {'fold-1':0,'fold-2':0,'fold-3':0,'avg':0},
+    }
 
     for i in range(1,4):
         # GET DATA TRAIN & TEST
@@ -96,8 +103,21 @@ def evaluasi(docs,terms,terms_only,fiturs):
         else:
             if best['evaluasi']['f_measure']['avg'] < evaluasi['f_measure']['avg']:
                 best = {'model':model, 'evaluasi':evaluasi}
+        
+        # SAVE FOLD EVALUATION
+        for j in evaluasi:
+            if j == 'akurasi':
+                fold[j]['fold-'+str(i)] = evaluasi[j]
+                fold[j]['avg'] += evaluasi[j]
+            else:
+                fold[j]['fold-'+str(i)] = evaluasi[j]['avg']
+                fold[j]['avg'] += evaluasi[j]['avg']
 
-    return best['evaluasi']['f_measure']['avg'],best['model'],best['evaluasi']
+
+    for i in fold:
+        fold[i]['avg'] = round(fold[i]['avg']/3, 3)
+
+    return best['evaluasi']['f_measure']['avg'],best['model'],fold
 
 def evaluasi_bc_2(doc_train,doc_test,terms,terms_only,fiturs):
     # SELECT TERM BY SELEKSI

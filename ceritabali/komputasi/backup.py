@@ -29,3 +29,11 @@ for i in a:
 a = normalize
 
 print(a)
+
+
+fold = {
+    'akurasi' : {'fold-1':0,'fold-2':0,'fold-3':0,'avg':0},
+    'precision' : {'fold-1':0,'fold-2':0,'fold-3':0,'avg':0},
+    'recall' : {'fold-1':0,'fold-2':0,'fold-3':0,'avg':0},
+    'f_measure' : {'fold-1':0,'fold-2':0,'fold-3':0,'avg':0},
+}

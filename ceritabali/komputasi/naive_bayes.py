@@ -2,7 +2,7 @@ def naive_bayes(doc_train,doc_test,terms):
     # -- Training
     jum_term_kelas,prob_term = train(doc_train,terms)
     # -- Testing
-    result = test(doc_test,terms,jum_term_kelas,prob_term)
+    result = test(doc_test,prob_term)
     
     return result, {'jum_term_kelas':jum_term_kelas,'prob_term':prob_term}
 
@@ -30,21 +30,13 @@ def train(doc_train,terms):
 
     return jum_term_kelas,prob_term
 
-def test(doc_test,terms,jum_term_kelas,prob_term):
+def test(doc_test,prob_term):
     result = {}
     for doc in doc_test:
         # hitung probabilitas kelas
         hasil_test = {'anak':1,'remaja':1,'dewasa':1}
         for term in doc_test[doc]['term']:
             old_hasil_test = hasil_test.copy()
-            # if term not in prob_term:
-            #     hasil_test['anak'] *= 1/(jum_term_kelas['anak']+len(terms))
-            #     hasil_test['remaja'] *= 1/(jum_term_kelas['remaja']+len(terms))
-            #     hasil_test['dewasa'] *= 1/(jum_term_kelas['dewasa']+len(terms))
-            # else:
-            #     hasil_test['anak'] *= prob_term[term]['anak']
-            #     hasil_test['remaja'] *= prob_term[term]['remaja']
-            #     hasil_test['dewasa'] *= prob_term[term]['dewasa']
             if term in prob_term:
                 hasil_test['anak'] *= prob_term[term]['anak']
                 hasil_test['remaja'] *= prob_term[term]['remaja']

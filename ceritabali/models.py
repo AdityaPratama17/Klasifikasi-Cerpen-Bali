@@ -24,9 +24,13 @@ class TF(models.Model):
     def __str__(self):
         return "{}. {}".format(self.id, self.tf)
 
-class Filter(models.Model):
+class Term_prob(models.Model):
     term = models.CharField(max_length=255)
+    anak = models.FloatField()
+    remaja = models.FloatField()
+    dewasa = models.FloatField()
 
     def __str__(self):
         return "{}. {}".format(self.id, self.term)
+
 
