@@ -174,7 +174,7 @@ def klasifikasi(request):
         # -- tokenisasi
         tokens = word_tokenize(tokens)
         # -- normalization
-        tokens = [i.replace('ã©', 'e').replace('ã¨', 'e').replace('ï¿½', 'e') for i in tokens]
+        tokens = [i.replace('ã©', 'e').replace('ã¨', 'e').replace('ï¿½', 'e').replace('\n', '') for i in tokens]
         # -- filetering
         tokens = [stopword.remove(i) for i in tokens]
         # -- stemming
@@ -207,7 +207,7 @@ def klasifikasi(request):
         kelas = max(hasil_test, key=hasil_test.get)
         if kelas == 'anak': color = 'success'
         if kelas == 'remaja': color = 'warning'
-        if kelas == 'dewasa': color = 'info'
+        if kelas == 'dewasa': color = 'danger'
 
         context ={
             'title' : 'Klasifikasi',
