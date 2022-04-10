@@ -246,7 +246,11 @@ def update_model(request):
                 dewasa = model[term]['dewasa'],            
             )
 
-        return redirect('ceritabali:klasifikasi')
+        context ={
+            'title' : 'Update Model',
+            'old' : request.POST,
+        }
+        return render(request, 'ceritabali/update_model.html', context)
 
     context ={
         'title' : 'Update Model',

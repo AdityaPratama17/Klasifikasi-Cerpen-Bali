@@ -10,8 +10,8 @@ def confusion_matrix(doc_test,result):
             for prediktif in cm[aktual]:
                 if doc_test[doc]['kelas'] == aktual and result[doc]['kelas'] == prediktif: 
                     cm[aktual][prediktif] += 1
-    # for i in cm.items():print(i)
-    # print('\n')
+    for i in cm.items():print(i)
+    print('\n')
 
     # -- accuracy, precision & recall
     akurasi = 0

@@ -7,7 +7,6 @@
             <div class="page-title-right">
                 <ol class="breadcrumb m-0">
                     <li class="breadcrumb-item"><a href="">Home</a></li>
-                    <li class="breadcrumb-item"><a href="">Klasifikasi</a></li>
                     <li class="breadcrumb-item active">Update Model</li>
                 </ol>
             </div>
@@ -19,6 +18,12 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
+                {% if old %}
+                <div class="alert alert-success alert-dismissible bg-success text-white border-0 fade show" role="alert">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <i class="dripicons-checkmark me-2"></i><strong>Model berhasil diperbarui.</strong>
+                </div>
+                {% endif %}
                 <form action="{% url 'ceritabali:update_model' %}" method="post">
                     {% csrf_token %}
                     <div class="row">
