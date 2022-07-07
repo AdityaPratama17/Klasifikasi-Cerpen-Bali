@@ -1,0 +1,3 @@
+Sistem berbasis web ini digunakan untuk mengklasifikasi cerita pendek berbahasa Bali ke dalam kelompok anak-anak, remaja, atau dewasa. Sistem ini dibangun menggunakan Framework Laravel, bahasa pemrograman yaitu PHP, HTML, CSS, Javascript, dan menggunakan DBMS yaitu MySQL.
+
+Dalam mengklasifikasi cerita pendek berbahasa Bali, sistem ini menggunakan algoritma Naive bayes dan algoritma Genetika. Naive bayes merupakan algoritma machine learning yang memanfaatkan perhitungan probabilitas dan statistik dalam melakukan klasifikasi. Algoritma Genetika adalah algoritma optimisasi yang digunakan untuk melakukan seleksi fitur pada kumpulan dokumen cerpen bali.
